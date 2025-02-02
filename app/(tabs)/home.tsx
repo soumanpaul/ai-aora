@@ -19,8 +19,8 @@ interface Post {
 }
 
 const Home = () => {
-  const { data: posts, refetch } = useAppwrite<Post[]>(getAllPosts);
-  const { data: latestPosts } = useAppwrite<Post[]>(getLatestPosts);
+  const { data: posts, refetch } = useAppwrite(getAllPosts);
+  const { data: latestPosts } = useAppwrite(getLatestPosts);
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -37,11 +37,11 @@ const Home = () => {
         keyExtractor={(item) => item.$id}
         renderItem={({ item }) => (
           <VideoCard
-            title={item.title}
-            thumbnail={item.thumbnail}
-            video={item.video}
-            creator={item.creator.username}
-            avatar={item.creator.avatar}
+            title={item?.title}
+            thumbnail={item?.thumbnail}
+            video={item?.video}
+            creator={item?.creator?.username}
+            avatar={item?.creator?.avatar}
           />
         )}
         ListHeaderComponent={() => (

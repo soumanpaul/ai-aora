@@ -10,12 +10,12 @@ import {
   
   export const appwriteConfig = {
     endpoint: "https://cloud.appwrite.io/v1",
-    platform: "com.jsm.sora",
-    projectId: "660d0e00da0472f3ad52",
+    platform: "com.jsm.aora",
+    projectId: "6785eb1d000f384604ce",
     storageId: "660d0e59e293896f1eaf",
-    databaseId: "660d14b2b809e838959a",
-    userCollectionId: "660d14c0e8ae0ea842b8",
-    videoCollectionId: "660d157fcb8675efe308",
+    databaseId: "6785ed3a000b893e0064",
+    userCollectionId: "6785ed65003921794ac6",
+    videoCollectionId: "6785ed7d0012aa73904e",
   };
   
   const client = new Client();
@@ -31,7 +31,7 @@ import {
   const databases = new Databases(client);
   
   // Register user
-  export async function createUser(email, password, username) {
+  export async function createUser(email: string, password: string, username: string) {
     try {
       const newAccount = await account.create(
         ID.unique(),
@@ -60,18 +60,18 @@ import {
   
       return newUser;
     } catch (error) {
-      throw new Error(error);
+      throw new Error(String(error));
     }
   }
   
   // Sign In
-  export async function signIn(email, password) {
+  export async function signIn(email: string, password: string) {
     try {
-      const session = await account.createEmailSession(email, password);
+      const session = await account.createSession(email, password);
   
       return session;
     } catch (error) {
-      throw new Error(error);
+      throw new Error(String(error));
     }
   }
   
@@ -82,7 +82,7 @@ import {
   
       return currentAccount;
     } catch (error) {
-      throw new Error(error);
+      throw new Error(String(error));
     }
   }
   
@@ -114,85 +114,85 @@ import {
   
       return session;
     } catch (error) {
-      throw new Error(error);
+      throw new Error(String(error));
     }
   }
   
   // Upload File
-  export async function uploadFile(file, type) {
-    if (!file) return;
+  // export async function uploadFile(file: any, type: string) {
+  //   if (!file) return;
   
-    const { mimeType, ...rest } = file;
-    const asset = { type: mimeType, ...rest };
+  //   const { mimeType, ...rest } = file;
+  //   const asset = { type: mimeType, ...rest };
   
-    try {
-      const uploadedFile = await storage.createFile(
-        appwriteConfig.storageId,
-        ID.unique(),
-        asset
-      );
+  //   try {
+  //     const uploadedFile = await storage.createFile(
+  //       appwriteConfig.storageId,
+  //       ID.unique(),
+  //       asset
+  //     );
   
-      const fileUrl = await getFilePreview(uploadedFile.$id, type);
-      return fileUrl;
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
+  //     const fileUrl = await getFilePreview(uploadedFile.$id, type);
+  //     return fileUrl;
+  //   } catch (error) {
+  //     throw new Error(String(error));
+  //   }
+  // }
   
   // Get File Preview
-  export async function getFilePreview(fileId, type) {
-    let fileUrl;
+  // export async function getFilePreview(fileId: string, type: string) {
+  //   let fileUrl;
   
-    try {
-      if (type === "video") {
-        fileUrl = storage.getFileView(appwriteConfig.storageId, fileId);
-      } else if (type === "image") {
-        fileUrl = storage.getFilePreview(
-          appwriteConfig.storageId,
-          fileId,
-          2000,
-          2000,
-          "top",
-          100
-        );
-      } else {
-        throw new Error("Invalid file type");
-      }
+  //   try {
+  //     if (type === "video") {
+  //       fileUrl = storage.getFileView(appwriteConfig.storageId, fileId);
+  //     } else if (type === "image") {
+  //       fileUrl = storage.getFilePreview(
+  //         appwriteConfig.storageId,
+  //         fileId,
+  //         2000,
+  //         2000,
+  //         "top",
+  //         100
+  //       );
+  //     } else {
+  //       throw new Error("Invalid file type");
+  //     }
   
-      if (!fileUrl) throw Error;
+  //     if (!fileUrl) throw Error;
   
-      return fileUrl;
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
+  //     return fileUrl;
+  //   } catch (error) {
+  //     throw new Error(String(error));
+  //   }
+  // }
   
   // Create Video Post
-  export async function createVideoPost(form) {
-    try {
-      const [thumbnailUrl, videoUrl] = await Promise.all([
-        uploadFile(form.thumbnail, "image"),
-        uploadFile(form.video, "video"),
-      ]);
+  // export async function createVideoPost(form: { [key: string]: any }) {
+  //   try {
+  //     const [thumbnailUrl, videoUrl] = await Promise.all([
+  //       uploadFile(form.thumbnail, "image"),
+  //       uploadFile(form.video, "video"),
+  //     ]);
   
-      const newPost = await databases.createDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.videoCollectionId,
-        ID.unique(),
-        {
-          title: form.title,
-          thumbnail: thumbnailUrl,
-          video: videoUrl,
-          prompt: form.prompt,
-          creator: form.userId,
-        }
-      );
+  //     const newPost = await databases.createDocument(
+  //       appwriteConfig.databaseId,
+  //       appwriteConfig.videoCollectionId,
+  //       ID.unique(),
+  //       {
+  //         title: form.title,
+  //         thumbnail: thumbnailUrl,
+  //         video: videoUrl,
+  //         prompt: form.prompt,
+  //         creator: form.userId,
+  //       }
+  //     );
   
-      return newPost;
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
+  //     return newPost;
+  //   } catch (error) {
+  //     throw new Error(String(error));
+  //   }
+  // }
   
   // Get all video Posts
   export async function getAllPosts() {
@@ -204,12 +204,12 @@ import {
   
       return posts.documents;
     } catch (error) {
-      throw new Error(error);
+      throw new Error(String(error));
     }
   }
   
   // Get video posts created by user
-  export async function getUserPosts(userId) {
+  export async function getUserPosts(userId: string) {
     try {
       const posts = await databases.listDocuments(
         appwriteConfig.databaseId,
@@ -219,12 +219,12 @@ import {
   
       return posts.documents;
     } catch (error) {
-      throw new Error(error);
+      throw new Error(String(error));
     }
   }
   
   // Get video posts that matches search query
-  export async function searchPosts(query) {
+  export async function searchPosts(query: string) {
     try {
       const posts = await databases.listDocuments(
         appwriteConfig.databaseId,
@@ -236,7 +236,7 @@ import {
   
       return posts.documents;
     } catch (error) {
-      throw new Error(error);
+      throw new Error(String(error));
     }
   }
   
@@ -251,6 +251,6 @@ import {
   
       return posts.documents;
     } catch (error) {
-      throw new Error(error);
+      throw new Error(String(error));
     }
   }

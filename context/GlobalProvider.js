@@ -3,26 +3,11 @@ import React, {
   useContext,
   useEffect,
   useState,
-  ReactNode,
 } from "react";
 import { getCurrentUser } from "../lib/appwrite";
 
-// interface User {
-//   id: string;
-//   name: string;
-//   email: string;
-//   // Add other user properties as needed
-// }
 
-// interface GlobalContextProps {
-//   isLogged: boolean;
-//   setIsLogged: React.Dispatch<React.SetStateAction<boolean>>;
-//   user: User | null;
-//   setUser: React.Dispatch<React.SetStateAction<User | null>>;
-//   loading: boolean;
-// }
-
-const GlobalContext = createContext({});
+const GlobalContext = createContext();
 
 export const useGlobalContext = () => {
   const context = useContext(GlobalContext);
@@ -34,9 +19,9 @@ export const useGlobalContext = () => {
 
 
 const GlobalProvider = ({ children }) => {
-  const [isLogged, setIsLogged] = useState<boolean>(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isLogged, setIsLogged] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getCurrentUser()
@@ -63,6 +48,8 @@ const GlobalProvider = ({ children }) => {
           isLogged,
           user,
           loading,
+          setIsLogged,
+          setUser
         }}
       >
         {children}

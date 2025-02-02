@@ -1,30 +1,35 @@
-import React from "react";
-import { View, ActivityIndicator, Dimensions, Platform } from "react-native";
+import { Redirect, Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
-interface LoaderProps {
-  isLoading: boolean;
-}
+import { Loader } from "../../components";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
-const Loader: React.FC<LoaderProps> = ({ isLoading }) => {
-  const osName = Platform.OS;
-  const screenHeight = Dimensions.get("screen").height;
+const AuthLayout = () => {
+  const { loading, isLogged } = useGlobalContext();
 
-  if (!isLoading) return null;
+  if (!loading && isLogged) return <Redirect href="/home" />;
 
   return (
-    <View
-      className="absolute flex justify-center items-center w-full h-full bg-primary/60 z-10"
-      style={{
-        height: screenHeight,
-      }}
-    >
-      <ActivityIndicator
-        animating={isLoading}
-        color="#fff"
-        size={osName === "ios" ? "large" : 50}
-      />
-    </View>
+    <>
+      <Stack>
+        <Stack.Screen
+          name="sign-in"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="sign-up"
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Stack>
+
+      <Loader isLoading={loading} />
+      <StatusBar backgroundColor="#161622" style="light" />
+    </>
   );
 };
 
-export default Loader;
+export default AuthLayout;
