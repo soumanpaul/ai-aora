@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-// import { ResizeMode, Video } from "expo-av";
+import { useVideoPlayer, VideoView } from "expo-video";
+import { useEvent } from 'expo';
 import * as Animatable from "react-native-animatable";
 import {
   FlatList,
@@ -8,6 +9,7 @@ import {
   TouchableOpacity,
   ViewabilityConfig,
   ViewToken,
+  StyleSheet
 } from "react-native";
 
 import { icons } from "../constants";
@@ -36,13 +38,24 @@ const zoomOut = {
 const TrendingItem: React.FC<TrendingItemProps> = ({ activeItem, item }) => {
   const [play, setPlay] = useState(false);
 
+  const videoSource =
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+
+  const player = useVideoPlayer(videoSource, player => {
+    player.loop = true;
+    player.play();
+  });
+
+  const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
+
+
   return (
     <Animatable.View
       className="mr-5"
       animation={activeItem === item.$id ? zoomIn : zoomOut}
       duration={500}
     >
-      {play ? ( <view>Video Play</view>
+      {play ? (  <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
         // <Video
         //   source={{ uri: item.video }}
         //   className="w-52 h-72 rounded-[33px] mt-3 bg-white/10"
@@ -63,7 +76,7 @@ const TrendingItem: React.FC<TrendingItemProps> = ({ activeItem, item }) => {
         >
           <ImageBackground
             source={{ uri: item.thumbnail }}
-            className="w-52 h-72 rounded-[33px] my-5 overflow-hidden shadow-lg shadow-black/40"
+            className="w-52 h-72 rounded-[18px] my-5 overflow-hidden shadow-lg shadow-black/40"
             resizeMode="cover"
           />
           <Image source={icons.play} className="w-12 h-12 absolute" resizeMode="contain" />
@@ -104,3 +117,21 @@ const Trending: React.FC<TrendingProps> = ({ posts }) => {
 };
 
 export default Trending;
+
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 50,
+  },
+  video: {
+    width: 350,
+    height: 275,
+  },
+  controlsContainer: {
+    padding: 10,
+  },
+});
