@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { useEvent } from 'expo';
+import { useEvent } from "expo";
 import * as Animatable from "react-native-animatable";
 import {
   FlatList,
@@ -23,6 +23,8 @@ interface Post {
 interface TrendingItemProps {
   activeItem: string;
   item: Post;
+  isPlaying: boolean;
+  onPlay: (id: string) => void;
 }
 
 const zoomIn = {
@@ -35,19 +37,22 @@ const zoomOut = {
   1: { scale: 0.9 },
 };
 
-const TrendingItem: React.FC<TrendingItemProps> = ({ activeItem, item }) => {
-  const [play, setPlay] = useState(false);
-
-  const videoSource =
+const videoSource =
   'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
-  const player = useVideoPlayer(videoSource, player => {
+const TrendingItem: React.FC<TrendingItemProps> = ({ activeItem, item, isPlaying, onPlay }) => {
+  
+  const player = useVideoPlayer(videoSource, (player) => {
     player.loop = true;
-    player.play();
   });
 
-  const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
-
+  useEffect(() => {
+    if (isPlaying) {
+      player.play();
+    } else {
+      player.pause();
+    }
+  }, [isPlaying]);
 
   return (
     <Animatable.View
@@ -55,24 +60,18 @@ const TrendingItem: React.FC<TrendingItemProps> = ({ activeItem, item }) => {
       animation={activeItem === item.$id ? zoomIn : zoomOut}
       duration={500}
     >
-      {play ? (  <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
-        // <Video
-        //   source={{ uri: item.video }}
-        //   className="w-52 h-72 rounded-[33px] mt-3 bg-white/10"
-        //   resizeMode={ResizeMode.CONTAIN}
-        //   useNativeControls
-        //   shouldPlay
-        //   onPlaybackStatusUpdate={(status) => {
-        //     if (status.didJustFinish) {
-        //       setPlay(false);
-        //     }
-        //   }}
-        // />
+      {isPlaying ? (
+        <VideoView
+          style={styles.video}
+          player={player}
+          allowsFullscreen
+          allowsPictureInPicture
+        />
       ) : (
         <TouchableOpacity
           className="relative flex justify-center items-center"
           activeOpacity={0.7}
-          onPress={() => setPlay(true)}
+          onPress={() => onPlay(item.$id)}
         >
           <ImageBackground
             source={{ uri: item.thumbnail }}
@@ -92,6 +91,11 @@ interface TrendingProps {
 
 const Trending: React.FC<TrendingProps> = ({ posts }) => {
   const [activeItem, setActiveItem] = useState(posts[0]?.$id || "");
+  const [playingItem, setPlayingItem] = useState<string | null>(null);
+
+  const handlePlay = (id: string) => {
+    setPlayingItem((prev) => (prev === id ? null : id));
+  };
 
   const viewableItemsChanged = ({ viewableItems }: { viewableItems: ViewToken[] }) => {
     if (viewableItems.length > 0) {
@@ -108,30 +112,25 @@ const Trending: React.FC<TrendingProps> = ({ posts }) => {
       data={posts}
       horizontal
       keyExtractor={(item) => item.$id}
-      renderItem={({ item }) => <TrendingItem activeItem={activeItem} item={item} />}
+      renderItem={({ item }) => (
+        <TrendingItem
+          activeItem={activeItem}
+          item={item}
+          isPlaying={playingItem === item.$id}
+          onPlay={handlePlay}
+        />
+      )}
       onViewableItemsChanged={viewableItemsChanged}
       viewabilityConfig={viewabilityConfig}
-      // contentOffset={{ x: 170 }}
     />
   );
 };
 
 export default Trending;
 
-
 const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-    padding: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 50,
-  },
   video: {
     width: 350,
     height: 275,
-  },
-  controlsContainer: {
-    padding: 10,
   },
 });
