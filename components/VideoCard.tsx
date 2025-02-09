@@ -45,6 +45,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ title, creator, avatar, thumbnail
           allowsFullscreen
           allowsPictureInPicture
           style={styles.video}
+          
         />
       ) : (
         <TouchableOpacity activeOpacity={0.7} onPress={() => setPlay(true)} className="w-full h-60 rounded-xl mt-3 relative flex justify-center items-center">
