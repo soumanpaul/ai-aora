@@ -6,7 +6,7 @@ import { View, TouchableOpacity, Image, TextInput, Alert } from "react-native";
 import { icons } from "../constants";
 
 interface SearchInputProps {
-  initialQuery?: string;
+  initialQuery?: string | string[];
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({ initialQuery = "" }) => {
