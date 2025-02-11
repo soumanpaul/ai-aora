@@ -67,10 +67,11 @@ import {
   // Sign In
   export async function signIn(email: string, password: string) {
     try {
-      const session = await account.createSession(email, password);
+      const session = await account.createEmailPasswordSession(email, password);
   
       return session;
     } catch (error) {
+      console.log("error",error)
       throw new Error(String(error));
     }
   }
@@ -216,9 +217,11 @@ import {
         appwriteConfig.videoCollectionId,
         [Query.equal("creator", userId)]
       );
-  
+      console.log("posts")
       return posts.documents;
     } catch (error) {
+      console.log("posts", error)
+
       throw new Error(String(error));
     }
   }
