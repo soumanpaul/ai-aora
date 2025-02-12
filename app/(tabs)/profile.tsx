@@ -25,7 +25,6 @@ interface Post {
 const Profile = () => {
   // const { query } = useLocalSearchParams();
   const { user, setUser, setIsLoggedIn } = useGlobalContext()
-  console.log("user", user.$id)
   const { data: posts, refetch } = useAppwrite(() =>getUserPosts(user.$id));
 //   const { data: latestPosts } = useAppwrite(getLatestPosts);
 
@@ -39,10 +38,10 @@ const Profile = () => {
   };
 
   const logOut = async () => {
-    await signOut()
     setUser(null)
     setIsLoggedIn(false)
-    router.replace('/sign-in')
+    router.push('/sign-in')
+    await signOut()
   }
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -73,7 +72,7 @@ const Profile = () => {
               <Image className="w-[90%] h-[90%]" source={{ uri: user?.avatar }} resizeMode="cover" />
             </View>
             <InfoBox
-              title={user.username}
+              title={user?.username}
               containerStyle='mt-5'
               titleStyle="text-lg"
             />
