@@ -37,7 +37,7 @@ const zoomOut = {
   1: { scale: 0.9 },
 };
 
-const videoSource =
+const videoSource = 
   'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
 const TrendingItem: React.FC<TrendingItemProps> = ({ activeItem, item, isPlaying, onPlay }) => {
